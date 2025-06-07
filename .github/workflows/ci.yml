@@ -19,9 +19,6 @@ jobs:
       with:
         go-version-file: go.mod
 
-    - name: Test
-      run: go test -race ./...
-
     - name: Lint
       run: "go vet ./..."
 

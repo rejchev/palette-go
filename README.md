@@ -5,101 +5,19 @@ A simple palette based on SGR:
 The Palette allows you to replace keywords in plain text with SGR before output
 
 ## Usage
-### Initializing
-First of all u must initialize palette once (on `main` func for example):
-
-```go
-
-import "github.com/rejchev/palette"
-
-func main() {
-	if err := palette.Init(nil); err != nil {
-		fmt.Printf("Init() error = %v\n", err)
-	}
-}
-```
-Function `Init(.)` takes one parameter of `*palette.Config` type with palette.
-
 ### Configuring
-By default config must be existing on `<executerDir>/configs/palette/palette.json` path \
-You can override it before `Init()`:
-```go
-import "github.com/rejchev/palette"
+First of all u must configure palette using file like `palette.json` \
 
-func main() {
-  // <executerDir>/../configs/palette
-  palette.SetConfigDirectory("../configs/palette")
-  if err := palette.Init(nil); err != nil {
-		fmt.Printf("Init() error = %v\n", err)
-  }
-}
-```
-By the way you can provide config directly:
-```go
-import "github.com/rejchev/palette"
+#### Palette
+`palette.json` contains one key - `palette` and this is map, there:
+- `key` is user based uniq sequence
+- `value` is patterned sequence that might be contains (ordered):
+  1. `<CTL>` аs control (predefined in `controls.go`) sequence
+  2. `<F8/B8>` if u mean using 8-bit colors
+  3. `<COLOR>` color val: `30-37 (Basic Foreground)`, `40-47 (Basic Background)`, `0-255 (8-bit color table)`, `#FFFFFF 8-bit colors`
 
-func main() {
-	if err := palette.Init(getPaletteConfig()); err != nil {
-		fmt.Printf("Init() error = %v\n", err)
-	}
-}
-
-func getPaletteConfig() *palette.Config {
-	return &palette.Config{Palette: map[string]string{
-		"{DEF}":      "R",
-		"{FBA}":      "30",
-		"{BBU}":      "44",
-		"{BMA}":      "45",
-		"{BCY}":      "46",
-		"{BWH}":      "47",
-		"{F8BA}":     "F8:0",
-		"{F8RD}":     "F8:1",
-		"{F8GR}":     "F8:2",
-		"{F8YL}":     "F8:3",
-		"{F8BU}":     "F8:4",
-		"{F8MA}":     "F8:5",
-		"{F8CY}":     "F8:6",
-		"{F8WH}":     "F8:7",
-		"{IF8200}":   "I:F8:200",
-		"{IF8APPLE}": "I:F8:#FFF000",
-	}}
-}
-```
-### Usaging
-After successfully `Init()`, you can `Use()` it:
-```go
-import (
-	"fmt"
-	"github.com/rejchev/palette"
-)
-
-func main() {
-	if err := palette.Init(getPaletteConfig()); err != nil {
-		fmt.Printf("Init() error = %v", err)
-	}
-
-	fmt.Printf(palette.Use("{IF8200}[palette]: {DEF}%s\n"), "Hello, World")
-}
-
-func getPaletteConfig() *palette.Config {
-	return &palette.Config{Palette: map[string]string{
-		"{DEF}":      "R",
-		"{FBA}":      "30",
-		"{BBU}":      "44",
-		"{BMA}":      "45",
-		"{BCY}":      "46",
-		"{BWH}":      "47",
-		"{F8BA}":     "F8:0",
-		"{F8RD}":     "F8:1",
-		"{F8GR}":     "F8:2",
-		"{F8YL}":     "F8:3",
-		"{F8BU}":     "F8:4",
-		"{F8MA}":     "F8:5",
-		"{F8CY}":     "F8:6",
-		"{F8WH}":     "F8:7",
-		"{IF8200}":   "I:F8:200",
-		"{IF8APPLE}": "I:F8:#FFF000",
-	}}
-}
-```
-![output](./.github/images/palette-go.png)
+All of `value` parts must be delimited by `:` \
+For example: 
+- `I:F8:#FFF000` indicates that i want to use italic (`I`) hexed color `F8:#FFF000`
+- `R` indicates that i want to reset
+- `I:32` indicates that i want to use italic (`I`) base color - `Green` 

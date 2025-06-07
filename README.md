@@ -102,3 +102,4 @@ func getPaletteConfig() *palette.Config {
 	}}
 }
 ```
+![output](./.github/images/palette-go.png)

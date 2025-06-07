@@ -5,6 +5,35 @@ import (
 	"testing"
 )
 
+func loadPaletteConfig() *Config {
+	if cfg, err := TryLoadConfig(""); err == nil {
+		return cfg
+	}
+
+	return nil
+}
+
+func getPaletteConfig() *Config {
+	return &Config{Palette: map[string]string{
+		"{DEF}":      "R",
+		"{FBA}":      "30",
+		"{BBU}":      "44",
+		"{BMA}":      "45",
+		"{BCY}":      "46",
+		"{BWH}":      "47",
+		"{F8BA}":     "F8:0",
+		"{F8RD}":     "F8:1",
+		"{F8GR}":     "F8:2",
+		"{F8YL}":     "F8:3",
+		"{F8BU}":     "F8:4",
+		"{F8MA}":     "F8:5",
+		"{F8CY}":     "F8:6",
+		"{F8WH}":     "F8:7",
+		"{IF8200}":   "I:F8:200",
+		"{IF8APPLE}": "I:F8:#FFF000",
+	}}
+}
+
 func TestParseHex(t *testing.T) {
 	hex := "FFFFFF"
 	expected := "255;255;255"
@@ -29,32 +58,11 @@ func TestParseHex2(t *testing.T) {
 	}
 }
 
-func TestNilInit(t *testing.T) {
-	if err := Init(nil); err != nil {
-		t.Errorf("Init() error = %v, want nil", err)
-	}
-}
-
 func TestInit(t *testing.T) {
+	Init(getPaletteConfig())
 
-	cfg := Config{map[string]string{
-		"{FBL}": "30",
-		"{FRD}": "31",
-		"{FR}":  "32",
-		"{BBL}": "40",
-		"{R}":   "R",
-	}}
-
-	if err := Init(&cfg); err != nil {
-		t.Errorf("Init() error = %v, want nil", err)
-	}
-}
-
-func TestSetConfigDirectory(t *testing.T) {
-	SetConfigDirectory("test")
-
-	if err := Init(nil); err == nil {
-		t.Errorf("Init() error = nil, want not nil")
+	if !IsInit() || !Get().Exists("{IF8APPLE}") {
+		t.Error("Expected exists = {IF8APPLE}")
 	}
 }
 
@@ -179,13 +187,11 @@ func TestParse8ColorInvalid2(t *testing.T) {
 }
 
 func TestUseNil(t *testing.T) {
-	SetConfigDirectory("configs/palette")
-	if err := Init(nil); err != nil {
-		t.Errorf("Init() error = %v, want nil", err)
-	}
 
-	src := "{FGR}[palette]: {DEF}Hello, world!"
-	expected := fmt.Sprintf("\u001B[32m[palette]: \u001B[0mHello, world!")
+	Init(getPaletteConfig())
+
+	src := "{FBA}[palette]: {DEF}Hello, world!"
+	expected := fmt.Sprintf("\u001B[30m[palette]: \u001B[0mHello, world!")
 
 	if val := Use(src); val != expected {
 		t.Errorf("Use() = %s, want %s", val, expected)

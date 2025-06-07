@@ -1,29 +1,47 @@
 package palette
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"path"
 	"strings"
 )
 
-var palette Palette
+var palette *Palette
 
 type IPalette interface {
-	Container() map[string]string
+	Set(k, v string)
+	Exists(k string) bool
+	Remove(k string)
 }
 
 type Palette struct {
 	container map[string]string
 }
 
-func createPalette(cfg *Config) {
-	palette = Palette{make(map[string]string)}
+func (p *Palette) Set(k, v string) {
+	p.container[k] = v
+}
 
-	var buf strings.Builder
+func (p *Palette) Exists(k string) bool {
+	_, ok := p.container[k]
+	return ok
+}
+
+func (p *Palette) Remove(k string) {
+	delete(p.container, k)
+}
+
+func Init(cfg *Config) {
+
+	if palette == nil {
+		palette = &Palette{make(map[string]string)}
+	}
+
+	if cfg.Palette == nil {
+		return
+	}
+
 	var color, ctl string
-	// key must patterned as {<controlKey>;<F/B>;<colorName>}
+	var buf strings.Builder
 	for k, v := range cfg.Palette {
 		ctl, color = "", ""
 		buf.Reset()
@@ -40,58 +58,24 @@ func createPalette(cfg *Config) {
 			}
 		}
 
-		palette.container[k] = buf.String()
+		palette.Set(k, buf.String())
 	}
 }
 
-func (p *Palette) Container() map[string]string {
-	return p.container
-}
-
-func Init(cfg *Config) (err error) {
-	if cfg == nil {
-		var execPath string
-		if execPath, err = os.Executable(); err != nil {
-			return err
-		}
-
-		fpath := path.Join(path.Dir(execPath), configDir, BaseConfigFile)
-		if _, err = os.Stat(fpath); os.IsNotExist(err) {
-			return fmt.Errorf("palette file %s must be present", fpath)
-		}
-
-		var file *os.File
-		if file, err = os.Open(fpath); err != nil {
-			return err
-		}
-
-		defer func(file *os.File) {
-			_ = file.Close()
-		}(file)
-
-		var config Config
-		if err = json.NewDecoder(file).Decode(&config); err != nil {
-			return err
-		}
-
-		cfg = &config
-	}
-
-	createPalette(cfg)
-
-	return nil
+func IsInit() bool {
+	return palette != nil
 }
 
 func Get() IPalette {
-	return &palette
+	return palette
 }
 
 func Use(buf string) string {
-	if buf == "" {
+	if !IsInit() || buf == "" {
 		return buf
 	}
 
-	for k, v := range palette.Container() {
+	for k, v := range palette.container {
 		buf = strings.ReplaceAll(buf, k, v)
 	}
 

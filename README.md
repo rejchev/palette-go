@@ -1,3 +1,5 @@
+[![Test & Build](https://github.com/rejchev/palette-go/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rejchev/palette-go/actions/workflows/ci.yml)
+
 # Palette
 A simple palette based on SGR:
 - [ECMA-35: Character Code Structure and Extension Techniques (eq. ISO 2022)](https://putty.org.ru/specs/ecma-035.pdf)

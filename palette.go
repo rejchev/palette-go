@@ -6,10 +6,18 @@ import (
 
 var palette *Palette
 
+type Entry struct {
+	key, val string
+}
+
+func CreateEntry(key, val string) Entry {
+	return Entry{key, val}
+}
+
 // IPalette interface
 type IPalette interface {
 	Use(buf string) string
-	Set(k, v string) bool
+	Set(k, v string)
 	Exists(k string) bool
 	Len() int
 	Remove(k string)
@@ -18,12 +26,12 @@ type IPalette interface {
 
 // Palette implements IPalette
 type Palette struct {
-	container map[string]string
+	container []Entry
 }
 
 // NewPalette crating Palette instance
 func NewPalette() *Palette {
-	return &Palette{container: make(map[string]string)}
+	return &Palette{container: make([]Entry, 0, 4)}
 }
 
 // NewPaletteFromConfig creating instance of Palette using IConfig
@@ -31,8 +39,8 @@ func NewPaletteFromConfig(config IConfig) *Palette {
 	inst := NewPalette()
 
 	if config != nil {
-		for k, v := range config.Palette() {
-			inst.Set(k, v)
+		for _, v := range config.Palette() {
+			inst.Set(v.key, v.val)
 		}
 	}
 
@@ -40,36 +48,26 @@ func NewPaletteFromConfig(config IConfig) *Palette {
 }
 
 // Set key of seq
-func (p *Palette) Set(k, v string) bool {
-	var buf string
-
-	if ctl := parseControl(v); ctl != "" {
-		buf += sgr(ctl)
+func (p *Palette) Set(k, v string) {
+	if buf := sgr(v); buf != "" {
+		if idx := p.Find(k); idx != -1 {
+			p.container[idx].val = v
+		} else {
+			p.container = append(p.container, Entry{k, buf})
+		}
 	}
-
-	if color := parseColor(v); color != "" {
-		buf += sgr(color)
-	}
-
-	if buf == "" {
-		return false
-	}
-
-	p.container[k] = buf
-	return true
 }
 
 // Exists check
 func (p *Palette) Exists(k string) bool {
-	_, ok := p.container[k]
-	return ok
+	return p.Find(k) != -1
 }
 
 // Use is processing ur str with keys
 func (p *Palette) Use(buf string) string {
 	if buf != "" {
-		for k, v := range p.container {
-			buf = strings.ReplaceAll(buf, k, v)
+		for _, v := range p.container {
+			buf = strings.ReplaceAll(buf, v.key, v.val)
 		}
 	}
 
@@ -78,17 +76,29 @@ func (p *Palette) Use(buf string) string {
 
 // Remove some of
 func (p *Palette) Remove(k string) {
-	delete(p.container, k)
+	if idx := p.Find(k); idx != -1 {
+		p.container = append(p.container[:idx], p.container[idx+1:]...)
+	}
 }
 
 // Reset is reset Palette obj
 func (p *Palette) Reset() {
-	p.container = make(map[string]string)
+	p.container = make([]Entry, 0, 4)
 }
 
 // Len ret count of keys
 func (p *Palette) Len() int {
 	return len(p.container)
+}
+
+func (p *Palette) Find(k string) int {
+	for idx, entry := range p.container {
+		if entry.key == k {
+			return idx
+		}
+	}
+
+	return -1
 }
 
 // Init initialize Palette instance using Config
@@ -114,12 +124,10 @@ func Get() IPalette {
 }
 
 // Set color by its key to the global palette
-func Set(k, v string) bool {
+func Set(k, v string) {
 	if IsInit() {
-		return palette.Set(k, v)
+		palette.Set(k, v)
 	}
-
-	return false
 }
 
 // Len of global palette

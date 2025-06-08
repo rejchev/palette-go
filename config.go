@@ -1,52 +1,51 @@
 package palette
 
 type IConfig interface {
-	Palette() map[string]string
+	Palette() []Entry
 }
 
 // Config contains map of colors
 type Config struct {
-	palette map[string]string
+	palette []Entry
 }
 
-func NewConfig(m map[string]string) *Config {
+func NewConfig(m []Entry) *Config {
 	return &Config{m}
 }
 
-func (c *Config) Palette() map[string]string {
+func (c *Config) Palette() []Entry {
 	return c.palette
 }
 
 func GetBasePaletteConfig() IConfig {
-	return NewConfig(map[string]string{
-
+	return NewConfig([]Entry{
 		// Base controls
-		"{B}":   "B",   // Bold
-		"{L}":   "L",   // Light
-		"{I}":   "I",   // Italic
-		"{R}":   "R",   // Reset
-		"{U}":   "U",   // Underlined
-		"{SB}":  "SB",  // Slow blink
-		"{REV}": "REV", // Swap foreground and background colors; inconsistent emulation
+		{"{B}", "B"},     // Bold
+		{"{L}", "L"},     // Light
+		{"{I}", "I"},     // Italic
+		{"{R}", "R"},     // Reset
+		{"{U}", "U"},     // Underlined
+		{"{SB}", "SB"},   // Slow blink
+		{"{REV}", "REV"}, // Swap foreground and background colors; inconsistent emulation
 
 		// Base Foreground colors
-		"{FBA}": "30", // Black
-		"{FRD}": "31", // Red
-		"{FGR}": "32", // Green
-		"{FYL}": "33", // Yellow
-		"{FBU}": "34", // Blue
-		"{FMA}": "35", // Magenta
-		"{FCY}": "36", // Cyan
-		"{FWH}": "37", // White
+		{"{FBA}", "C:30"}, // Black
+		{"{FRD}", "C:31"}, // Red
+		{"{FGR}", "C:32"}, // Green
+		{"{FYL}", "C:33"}, // Yellow
+		{"{FBU}", "C:34"}, // Blue
+		{"{FMA}", "C:35"}, // Magenta
+		{"{FCY}", "C:36"}, // Cyan
+		{"{FWH}", "C:37"}, // White
 
-		// Base Background colors
-		"{BBA}": "40", // Black
-		"{BRD}": "41", // Red
-		"{BGR}": "42", // Green
-		"{BYL}": "43", // Yellow
-		"{BBU}": "44", // Blue
-		"{BMA}": "45", // Magenta
-		"{BCY}": "46", // Cyan
-		"{BWH}": "47", // White
+		// Base background colors
+		{"{BBA}", "C:40"}, // Black
+		{"{BRD}", "C:41"}, // Red
+		{"{BGR}", "C:42"}, // Green
+		{"{BYL}", "C:43"}, // Yellow
+		{"{BBU}", "C:44"}, // Blue
+		{"{BMA}", "C:45"}, // Magenta
+		{"{BCY}", "C:46"}, // Cyan
+		{"{BWH}", "C:47"}, // White
 	})
 }

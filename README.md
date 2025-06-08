@@ -7,6 +7,11 @@ A simple palette based on SGR:
 
 The Palette allows you to replace keywords in plain text with SGR before output
 
+## Install
+```
+go get github.com/rejchev/palette
+```
+
 ## Configure
 First of all u must configure palette using file like `palette.json`
 

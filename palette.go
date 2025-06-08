@@ -7,29 +7,42 @@ import (
 
 var palette *Palette
 
+// IPalette interface
 type IPalette interface {
 	Set(k, v string)
 	Exists(k string) bool
 	Remove(k string)
 }
 
+// Palette implements IPalette
 type Palette struct {
 	container map[string]string
 }
 
+// Set key of seq
 func (p *Palette) Set(k, v string) {
 	p.container[k] = v
 }
 
+// Exists check
 func (p *Palette) Exists(k string) bool {
 	_, ok := p.container[k]
 	return ok
 }
 
+// Remove some of
 func (p *Palette) Remove(k string) {
 	delete(p.container, k)
 }
 
+// Init initialize Palette instance using Config
+//
+// Container of Palette initialized only once.
+// U can re - palette.Init call if you want to complement  palette
+//
+// - cfg: ptr on Config (can be nil)
+//
+// noreturn
 func Init(cfg *Config) {
 
 	if palette == nil {
@@ -62,14 +75,19 @@ func Init(cfg *Config) {
 	}
 }
 
+// IsInit checks palette initialization
 func IsInit() bool {
 	return palette != nil
 }
 
+// Get palette instance
 func Get() IPalette {
 	return palette
 }
 
+// Use is using palette with replacement all known sequences
+//
+// return: string as its on palette.IsInit = false or empty / processed str - otherwise
 func Use(buf string) string {
 	if !IsInit() || buf == "" {
 		return buf

@@ -7,12 +7,19 @@ import (
 	"path"
 )
 
+// BaseConfigPath is base palette path
 const BaseConfigPath = "/configs/palette/palette.json"
 
+// Config contains map of colors
 type Config struct {
 	Palette map[string]string `json:"palette"`
 }
 
+// TryLoadConfig is trying load config with colors defs
+//
+// - confpath: str path to config (if empty - <execDir> + BaseConfigPath is used)
+//
+// return cfg ptr on success / err != nil on fail
 func TryLoadConfig(confpath string) (*Config, error) {
 	var err error
 	if confpath == "" {

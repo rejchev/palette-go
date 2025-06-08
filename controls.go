@@ -3,10 +3,14 @@ package palette
 import "strings"
 
 const (
+	// Indicates about Foreground 8-bit code
 	F8 = "F8"
+
+	// Indicates about Background 8-bit code
 	B8 = "B8"
 )
 
+// Controls is a map of some SGR codes
 type Controls = map[string]string
 
 var controls = Controls{

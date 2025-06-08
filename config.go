@@ -1,50 +1,52 @@
 package palette
 
-import (
-	"encoding/json"
-	"fmt"
-	"os"
-	"path"
-)
-
-// BaseConfigPath is base palette path
-const BaseConfigPath = "/configs/palette/palette.json"
+type IConfig interface {
+	Palette() map[string]string
+}
 
 // Config contains map of colors
 type Config struct {
-	Palette map[string]string `json:"palette"`
+	palette map[string]string
 }
 
-// TryLoadConfig is trying load config with colors defs
-//
-// - confpath: str path to config (if empty - <execDir> + BaseConfigPath is used)
-//
-// return cfg ptr on success / err != nil on fail
-func TryLoadConfig(confpath string) (*Config, error) {
-	var err error
-	if confpath == "" {
-		var execpath string
-		if execpath, err = os.Executable(); err != nil {
-			return nil, err
-		}
+func NewConfig(m map[string]string) *Config {
+	return &Config{m}
+}
 
-		confpath = path.Join(path.Dir(execpath), BaseConfigPath)
-		if _, err = os.Stat(confpath); os.IsNotExist(err) {
-			return nil, fmt.Errorf("palette file %s must be present", confpath)
-		}
-	}
+func (c *Config) Palette() map[string]string {
+	return c.palette
+}
 
-	var file *os.File
-	if file, err = os.Open(confpath); err != nil {
-		return nil, err
-	}
+func GetBasePaletteConfig() IConfig {
+	return NewConfig(map[string]string{
 
-	defer func(file *os.File) {
-		_ = file.Close()
-	}(file)
+		// Base controls
+		"{B}":   "B",   // Bold
+		"{L}":   "L",   // Light
+		"{I}":   "I",   // Italic
+		"{R}":   "R",   // Reset
+		"{U}":   "U",   // Underlined
+		"{SB}":  "SB",  // Slow blink
+		"{REV}": "REV", // Swap foreground and background colors; inconsistent emulation
 
-	var config Config
-	err = json.NewDecoder(file).Decode(&config)
+		// Base Foreground colors
+		"{FBA}": "30", // Black
+		"{FRD}": "31", // Red
+		"{FGR}": "32", // Green
+		"{FYL}": "33", // Yellow
+		"{FBU}": "34", // Blue
+		"{FMA}": "35", // Magenta
+		"{FCY}": "36", // Cyan
+		"{FWH}": "37", // White
 
-	return &config, err
+		// Base Background colors
+		"{BBA}": "40", // Black
+		"{BRD}": "41", // Red
+		"{BGR}": "42", // Green
+		"{BYL}": "43", // Yellow
+		"{BBU}": "44", // Blue
+		"{BMA}": "45", // Magenta
+		"{BCY}": "46", // Cyan
+		"{BWH}": "47", // White
+	})
 }

@@ -1,6 +1,9 @@
 package palette
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
 	// Indicates about Foreground 8-bit code
@@ -35,6 +38,10 @@ var controls = Controls{
 
 	// Swap foreground and background colors; inconsistent emulation
 	"REV": "7",
+}
+
+func sgr(val string) string {
+	return fmt.Sprintf("\x1B\x5B%s\x6D", val)
 }
 
 func parseControl(s string) string {

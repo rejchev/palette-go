@@ -1,7 +1,6 @@
 package palette
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -9,9 +8,12 @@ var palette *Palette
 
 // IPalette interface
 type IPalette interface {
-	Set(k, v string)
+	Use(buf string) string
+	Set(k, v string) bool
 	Exists(k string) bool
+	Len() int
 	Remove(k string)
+	Reset()
 }
 
 // Palette implements IPalette
@@ -19,9 +21,42 @@ type Palette struct {
 	container map[string]string
 }
 
+// NewPalette crating Palette instance
+func NewPalette() *Palette {
+	return &Palette{container: make(map[string]string)}
+}
+
+// NewPaletteFromConfig creating instance of Palette using IConfig
+func NewPaletteFromConfig(config IConfig) *Palette {
+	inst := NewPalette()
+
+	if config != nil {
+		for k, v := range config.Palette() {
+			inst.Set(k, v)
+		}
+	}
+
+	return inst
+}
+
 // Set key of seq
-func (p *Palette) Set(k, v string) {
-	p.container[k] = v
+func (p *Palette) Set(k, v string) bool {
+	var buf string
+
+	if ctl := parseControl(v); ctl != "" {
+		buf += sgr(ctl)
+	}
+
+	if color := parseColor(v); color != "" {
+		buf += sgr(color)
+	}
+
+	if buf == "" {
+		return false
+	}
+
+	p.container[k] = buf
+	return true
 }
 
 // Exists check
@@ -30,9 +65,30 @@ func (p *Palette) Exists(k string) bool {
 	return ok
 }
 
+// Use is processing ur str with keys
+func (p *Palette) Use(buf string) string {
+	if buf != "" {
+		for k, v := range p.container {
+			buf = strings.ReplaceAll(buf, k, v)
+		}
+	}
+
+	return buf
+}
+
 // Remove some of
 func (p *Palette) Remove(k string) {
 	delete(p.container, k)
+}
+
+// Reset is reset Palette obj
+func (p *Palette) Reset() {
+	p.container = make(map[string]string)
+}
+
+// Len ret count of keys
+func (p *Palette) Len() int {
+	return len(p.container)
 }
 
 // Init initialize Palette instance using Config
@@ -43,36 +99,8 @@ func (p *Palette) Remove(k string) {
 // - cfg: ptr on Config (can be nil)
 //
 // noreturn
-func Init(cfg *Config) {
-
-	if palette == nil {
-		palette = &Palette{make(map[string]string)}
-	}
-
-	if cfg.Palette == nil {
-		return
-	}
-
-	var color, ctl string
-	var buf strings.Builder
-	for k, v := range cfg.Palette {
-		ctl, color = "", ""
-		buf.Reset()
-
-		if ctl = parseControl(v); ctl != "" {
-			if _, err := buf.WriteString(fmt.Sprintf("\x1B\x5B%s\x6d", ctl)); err != nil {
-				continue
-			}
-		}
-
-		if color = parseColor(v); color != "" {
-			if _, err := buf.WriteString(fmt.Sprintf("\x1B\x5B%s\x6d", color)); err != nil {
-				continue
-			}
-		}
-
-		palette.Set(k, buf.String())
-	}
+func Init(cfg IConfig) {
+	palette = NewPaletteFromConfig(cfg)
 }
 
 // IsInit checks palette initialization
@@ -85,17 +113,38 @@ func Get() IPalette {
 	return palette
 }
 
+// Set color by its key to the global palette
+func Set(k, v string) bool {
+	if IsInit() {
+		return palette.Set(k, v)
+	}
+
+	return false
+}
+
+// Len of global palette
+func Len() int {
+	if IsInit() {
+		return palette.Len()
+	}
+
+	return -1
+}
+
 // Use is using palette with replacement all known sequences
 //
 // return: string as its on palette.IsInit = false or empty / processed str - otherwise
 func Use(buf string) string {
-	if !IsInit() || buf == "" {
-		return buf
-	}
-
-	for k, v := range palette.container {
-		buf = strings.ReplaceAll(buf, k, v)
+	if IsInit() {
+		return palette.Use(buf)
 	}
 
 	return buf
+}
+
+// Reset global palette
+func Reset() {
+	if IsInit() {
+		palette.Reset()
+	}
 }

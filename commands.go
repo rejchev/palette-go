@@ -8,12 +8,10 @@ import (
 
 const delimiter = ":"
 
-type controlFn = func(string, int) string
+type commandFn = func(string, int) string
+type commands = map[string]commandFn
 
-// Controls is a map of some SGR codes
-type Controls = map[string]controlFn
-
-var controls = Controls{
+var cmds = commands{
 	// Reset or Normal
 	"R": processPrimitive,
 	// Bold
@@ -149,7 +147,7 @@ func sgr(val string) string {
 		command = val[:idx]
 	}
 
-	if fn, ok := controls[command]; ok {
+	if fn, ok := cmds[command]; ok {
 		if result := fn(val, idx); result != "" {
 			return fmt.Sprintf("\x1B\x5B%s\x6D", result)
 		}
@@ -172,10 +170,6 @@ func isFBBC(buf string) bool {
 
 func isBBBC(buf string) bool {
 	return len(buf) == 3 && buf[0] == '1' && buf[1] == '0' && buf[2] >= '0' && buf[2] <= '7'
-}
-
-func isBaseColor(buf string) bool {
-	return (buf[0] == '3' || buf[0] == '4') && (buf[1] >= '0' && buf[1] <= '7')
 }
 
 func getRgb(hex string) string {

@@ -1,8 +1,6 @@
 package palette
 
-import (
-	"strings"
-)
+import "strings"
 
 var palette *Palette
 

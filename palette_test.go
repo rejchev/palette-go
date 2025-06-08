@@ -5,16 +5,8 @@ import (
 	"testing"
 )
 
-func loadPaletteConfig() *Config {
-	if cfg, err := TryLoadConfig(""); err == nil {
-		return cfg
-	}
-
-	return nil
-}
-
 func getPaletteConfig() *Config {
-	return &Config{Palette: map[string]string{
+	return NewConfig(map[string]string{
 		"{DEF}":      "R",
 		"{FBA}":      "30",
 		"{BBU}":      "44",
@@ -31,7 +23,7 @@ func getPaletteConfig() *Config {
 		"{F8WH}":     "F8:7",
 		"{IF8200}":   "I:F8:200",
 		"{IF8APPLE}": "I:F8:#FFF000",
-	}}
+	})
 }
 
 func TestParseHex(t *testing.T) {

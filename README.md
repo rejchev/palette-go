@@ -1,4 +1,5 @@
 [![Test & Build](https://github.com/rejchev/palette-go/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rejchev/palette-go/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/rejchev/palette.svg)](https://pkg.go.dev/github.com/rejchev/palette)
 
 # Palette
 A simple palette based on SGR:

@@ -6,7 +6,13 @@ import (
 	"strings"
 )
 
-const delimiter = ":"
+const (
+	// between <cmd>;<cmd>
+	commandsDelimiter = ";"
+
+	// between <cmd>:<val>
+	commandDelimiter = ":"
+)
 
 type commandFn = func(string, int) string
 type commands = map[string]commandFn
@@ -135,25 +141,31 @@ func process24BitColor(s string, idx int) string {
 	return ""
 }
 
-func sgr(val string) string {
+func process(val string) string {
 
 	if val == "" {
 		return val
 	}
 
-	command := val
-	idx := strings.Index(val, delimiter)
-	if idx != -1 {
-		command = val[:idx]
-	}
+	var acc string
+	for _, buf := range strings.Split(val, commandsDelimiter) {
 
-	if fn, ok := cmds[command]; ok {
-		if result := fn(val, idx); result != "" {
-			return fmt.Sprintf("\x1B\x5B%s\x6D", result)
+		cmd := buf
+		pos := strings.Index(buf, commandDelimiter)
+		if pos != -1 {
+			cmd = buf[:pos]
 		}
+
+		if fn, ok := cmds[cmd]; ok {
+			if result := fn(buf, pos); result != "" {
+				buf = fmt.Sprintf("\x1B\x5B%s\x6D", result)
+			}
+		}
+
+		acc += buf
 	}
 
-	return val
+	return acc
 }
 
 func isFBC(buf string) bool {

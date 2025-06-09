@@ -1,5 +1,5 @@
-[![Test & Build](https://github.com/rejchev/palette-go/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rejchev/palette-go/actions/workflows/ci.yml)
-[![Go Reference](https://pkg.go.dev/badge/github.com/rejchev/palette.svg)](https://pkg.go.dev/github.com/rejchev/palette)
+[![Test & Build](https://github.com/rejchev/palette/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rejchev/palette/actions/workflows/ci.yml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/rejchev/palette/v2.svg)](https://pkg.go.dev/github.com/rejchev/palette/v2)
 
 # Palette
 A simple palette based on SGR:
@@ -53,7 +53,7 @@ You can combine commands, as [mentioned](#about), using delimiter - `;` per comm
 
 ## Install
 ```
-go get github.com/rejchev/palette
+go get github.com/rejchev/palette/v2
 ```
 
 ## Configure

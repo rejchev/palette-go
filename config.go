@@ -29,7 +29,7 @@ func GetBasePaletteConfig() IConfig {
 		{"{RB}", "RB"},     // Rapid blink
 		{"{REV}", "REV"},   // Swap foreground and background colors; inconsistent emulation
 		{"{HIDE}", "HIDE"}, // Conceal or hide (Not widely supported)
-		{"CO", "CO"},       // Crossed-out, or strike
+		{"{CO}", "CO"},     // Crossed-out, or strike
 
 		// Base Foreground colors
 		{"{FBA}", "C:30"}, // Black

@@ -20,13 +20,16 @@ func (c *Config) Palette() []Entry {
 func GetBasePaletteConfig() IConfig {
 	return NewConfig([]Entry{
 		// Base controls
-		{"{B}", "B"},     // Bold
-		{"{L}", "L"},     // Light
-		{"{I}", "I"},     // Italic
-		{"{R}", "R"},     // Reset
-		{"{U}", "U"},     // Underlined
-		{"{SB}", "SB"},   // Slow blink
-		{"{REV}", "REV"}, // Swap foreground and background colors; inconsistent emulation
+		{"{R}", "R"},       // Reset
+		{"{B}", "B"},       // Bold
+		{"{L}", "L"},       // Light
+		{"{I}", "I"},       // Italic
+		{"{U}", "U"},       // Underlined
+		{"{SB}", "SB"},     // Slow blink
+		{"{RB}", "RB"},     // Rapid blink
+		{"{REV}", "REV"},   // Swap foreground and background colors; inconsistent emulation
+		{"{HIDE}", "HIDE"}, // Conceal or hide (Not widely supported)
+		{"CO", "CO"},       // Crossed-out, or strike
 
 		// Base Foreground colors
 		{"{FBA}", "C:30"}, // Black

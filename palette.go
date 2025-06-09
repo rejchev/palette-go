@@ -47,7 +47,7 @@ func NewPaletteFromConfig(config IConfig) *Palette {
 
 // Set key of seq
 func (p *Palette) Set(k, v string) {
-	if buf := sgr(v); buf != "" {
+	if buf := process(v); buf != "" {
 		if idx := p.Find(k); idx != -1 {
 			p.container[idx].val = v
 		} else {

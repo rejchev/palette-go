@@ -1,5 +1,6 @@
 [![Test & Build](https://github.com/rejchev/palette/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/rejchev/palette/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/rejchev/palette/v2.svg)](https://pkg.go.dev/github.com/rejchev/palette/v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/rejchev/palette/v2)](https://goreportcard.com/report/github.com/rejchev/palette/v2)
 
 # Palette
 A simple palette based on SGR:
@@ -78,7 +79,7 @@ Package provide base config by `GetBasePaletteConfig()` with next necessary keys
     {"{RB}", "RB"},     // Rapid blink
     {"{REV}", "REV"},   // Swap foreground and background colors; inconsistent emulation
     {"{HIDE}", "HIDE"}, // Conceal or hide (Not widely supported)
-    {"CO", "CO"},       // Crossed-out, or strike
+    {"{CO}", "CO"},     // Crossed-out, or strike
     
     // Base Foreground colors
     {"{FBA}", "C:30"}, // Black
